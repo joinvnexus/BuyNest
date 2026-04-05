@@ -1,8 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Moon, Sun } from 'lucide-react';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -28,43 +26,51 @@ export function ThemeProvider({
   storageKey = 'ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState(() => {
-    const stored = localStorage.getItem(storageKey);
-    return stored ?? defaultTheme;
-  });
+  const [theme, setTheme] = useState(defaultTheme);
 
   useEffect(() => {
-    const root = window.document?.documentElement;
-    root?.classList.remove('light', 'dark');
+    const storedTheme = window.localStorage.getItem(storageKey);
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
 
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches 
-        ? 'dark' 
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
         : 'light';
-      root?.classList.add(systemTheme);
+      root.classList.add(systemTheme);
       return;
     }
 
-    root?.classList.add(theme);
+    root.classList.add(theme);
   }, [theme]);
 
   const value = {
     theme,
-    setTheme: (theme: string) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (nextTheme: string) => {
+      window.localStorage.setItem(storageKey, nextTheme);
+      setTheme(nextTheme);
     },
   };
 
-  return <ThemeProviderContext.Provider {...props} value={value}>{children}</ThemeProviderContext.Provider>;
+  return (
+    <ThemeProviderContext.Provider {...props} value={value}>
+      {children}
+    </ThemeProviderContext.Provider>
+  );
 }
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined)
+  if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
+  }
 
   return context;
 };
