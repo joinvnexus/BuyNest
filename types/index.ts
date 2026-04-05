@@ -1,10 +1,10 @@
 export interface Product {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   price: number;
   images: string[];
-  category?: string;
+  category?: string | null;
   stock: number;
   createdAt: Date;
   updatedAt: Date;
@@ -35,3 +35,4 @@ export interface Order {
 
 export type UserRole = 'USER' | 'ADMIN';
 
+export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
