@@ -1,11 +1,31 @@
 import Stripe from 'stripe';
+import { CartItem } from '@/types';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
+export async function createPaymentIntent(cartItems: CartItem[], userId: string) {
+  const amount = cartItems.reduce(
+    (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
+    0
+  );
+
+  return stripe.paymentIntents.create({
+    amount,
+    currency: 'usd',
+    automatic_payment_methods: {
+      enabled: true,
+    },
+    metadata: {
+      userId,
+      itemCount: String(cartItems.length),
+    },
+  });
+}
+
 export async function createCheckoutSession(
-  cartItems: any[],
+  cartItems: CartItem[],
   userId: string
 ) {
   const line_items = cartItems.map((item) => ({
@@ -19,7 +39,7 @@ export async function createCheckoutSession(
     quantity: item.quantity,
   }));
 
-  const session = await stripe.checkout.sessions.create({
+  return stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items,
     mode: 'payment',
@@ -29,21 +49,15 @@ export async function createCheckoutSession(
       userId,
     },
   });
-
-  return session;
 }
 
 export async function verifyWebhook(signature: string, payload: Buffer) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-  
-  let event;
-  
+
   try {
-    event = stripe.webhooks.constructEvent(payload.toString(), signature, webhookSecret);
+    return stripe.webhooks.constructEvent(payload.toString(), signature, webhookSecret);
   } catch (err) {
     console.error('Webhook signature verification failed');
     return;
   }
-
-  return event;
 }

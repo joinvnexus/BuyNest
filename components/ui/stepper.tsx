@@ -1,5 +1,5 @@
+import { Check, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
 
 interface StepperProps {
   steps: string[];
@@ -9,25 +9,36 @@ interface StepperProps {
 
 export function Stepper({ steps, activeStep, className }: StepperProps) {
   return (
-    <div className={cn("flex items-center w-full mb-8", className)}>
-      {steps.map((step, index) => (
-        <div key={step} className="flex-1 flex items-center">
-          <div className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-all mx-2",
-            index <= activeStep 
-              ? "bg-custom-accent text-white border-custom-accent shadow-lg" 
-              : "bg-muted text-muted-foreground border-muted-foreground/50"
-          )}>
-            {index + 1}
+    <div className={cn("flex flex-col gap-4 rounded-[2rem] border border-border/60 bg-card/70 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5", className)}>
+      {steps.map((step, index) => {
+        const isComplete = index < activeStep;
+        const isActive = index === activeStep;
+
+        return (
+          <div key={step} className="flex items-center gap-3 sm:flex-1">
+            <div
+              className={cn(
+                "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-sm font-semibold transition-colors",
+                isComplete
+                  ? "border-custom-accent bg-custom-accent text-white"
+                  : isActive
+                    ? "border-custom-accent/40 bg-custom-accent/10 text-custom-accent"
+                    : "border-border/60 bg-background text-muted-foreground"
+              )}
+            >
+              {isComplete ? <Check className="h-4 w-4" /> : index + 1}
+            </div>
+            <div className="min-w-0">
+              <p className={cn("text-sm font-medium", isActive || isComplete ? "text-foreground" : "text-muted-foreground")}>
+                {step}
+              </p>
+            </div>
+            {index < steps.length - 1 ? (
+              <ChevronRight className="hidden h-4 w-4 text-muted-foreground sm:block" />
+            ) : null}
           </div>
-          {index < steps.length - 1 && (
-            <ChevronRight className={cn(
-              "w-6 h-6 mx-2",
-              index < activeStep ? "text-custom-accent" : "text-muted-foreground"
-            )} />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
