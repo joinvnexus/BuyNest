@@ -1,73 +1,106 @@
 "use client";
 
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function Login() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const redirectTo = searchParams.get("callbackUrl") || "/products";
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+
     const result = await signIn("credentials", {
       redirect: false,
       email,
       password,
+      callbackUrl: redirectTo,
     });
 
+    setLoading(false);
+
     if (result?.ok) {
-      router.push("/admin/products");
-    } else {
-      toast.error("Invalid credentials");
+      router.push(result.url || redirectTo);
+      return;
     }
+
+    toast.error("Invalid email or password");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="max-w-md w-full space-y-8 p-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-foreground">
-            Sign in to your account
-          </h2>
+    <AuthShell
+      eyebrow="Account access"
+      title="Sign in to continue shopping."
+      description="Access checkout, keep your cart attached to your account, and manage orders from a single session."
+      footerText="Don't have an account?"
+      footerLinkHref="/register"
+      footerLinkLabel="Create one"
+    >
+      <div className="space-y-6">
+        <div className="space-y-2 text-center">
+          <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
+          <p className="text-sm text-muted-foreground">
+            Sign in to continue to {redirectTo === "/products" ? "the catalog" : "your next step"}.
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email
-            </label>
+
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
               name="email"
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(event) => setEmail(event.target.value)}
+              className="h-12 rounded-2xl"
+              placeholder="you@example.com"
             />
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              Password
-            </label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                href="/register"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                Need an account?
+              </Link>
+            </div>
             <Input
               id="password"
               name="password"
               type="password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
+              className="h-12 rounded-2xl"
+              placeholder="Enter your password"
             />
           </div>
-          <Button type="submit" className="w-full">
-            Sign in
+          <Button
+            type="submit"
+            className="h-12 w-full rounded-full bg-custom-accent hover:bg-blue-600"
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
       </div>
-    </div>
+    </AuthShell>
   );
 }
-
