@@ -1,17 +1,19 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 import { Check, ChevronLeft, ShieldCheck, Truck } from 'lucide-react';
 import { getProduct, getRelatedProducts } from '@/lib/db';
-import ImageGallery from '@/components/image-gallery';
-import AddToCart from '@/components/add-to-cart';
-import RelatedProducts from '@/components/related-products';
+import { ImageGallery } from '@/components/image-gallery';
+import { AddToCart } from '@/components/add-to-cart';
+import { RelatedProducts } from '@/components/related-products';
 import { Button } from '@/components/ui/button';
 
 interface ProductPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProduct(params.id);
+  const { id } = await params;
+  const product = await getProduct(id);
 
   if (!product) {
     return (
@@ -25,7 +27,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             This item may have been removed or is no longer available in the catalog.
           </p>
           <Button asChild className="rounded-full bg-custom-accent hover:bg-blue-600">
-            <Link href="/products">Back to catalog</Link>
+            <Link href={"/products" as Route}>Back to catalog</Link>
           </Button>
         </div>
       </div>
@@ -45,12 +47,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <section className="border-b border-border/60 bg-muted/30">
         <div className="container px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <Link href="/products" className="inline-flex items-center gap-2 hover:text-foreground">
+            <Link href={"/products" as Route} className="inline-flex items-center gap-2 hover:text-foreground">
               <ChevronLeft className="h-4 w-4" />
               Back to catalog
             </Link>
             <span>/</span>
-            <Link href={`/products?category=${product.category ?? ''}`} className="hover:text-foreground">
+            <Link href={`/products?category=${product.category ?? ''}` as Route} className="hover:text-foreground">
               {formattedCategory}
             </Link>
             <span>/</span>

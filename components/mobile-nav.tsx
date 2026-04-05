@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Menu } from "lucide-react";
@@ -53,7 +54,7 @@ export function MobileNav() {
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href as Route}
                   className={cn(
                     "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition-colors",
                     isActive
@@ -79,7 +80,7 @@ export function MobileNav() {
                 <>
                   {session.user.role === "ADMIN" ? (
                     <Button asChild variant="secondary" className="rounded-full">
-                      <Link href="/admin/products">Admin</Link>
+                      <Link href={"/admin/products" as Route}>Admin</Link>
                     </Button>
                   ) : null}
                   <Button
@@ -93,10 +94,10 @@ export function MobileNav() {
               ) : (
                 <>
                   <Button asChild className="rounded-full">
-                    <Link href="/login">Sign in</Link>
+                    <Link href={"/login" as Route}>Sign in</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-full">
-                    <Link href="/register">Create account</Link>
+                    <Link href={"/register" as Route}>Create account</Link>
                   </Button>
                 </>
               )}

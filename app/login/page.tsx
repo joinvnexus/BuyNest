@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
@@ -33,7 +34,7 @@ export default function Login() {
     setLoading(false);
 
     if (result?.ok) {
-      router.push(result.url || redirectTo);
+      router.push((result.url || redirectTo) as Route);
       return;
     }
 
@@ -75,7 +76,7 @@ export default function Login() {
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
               <Link
-                href="/register"
+                href={"/register" as Route}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 Need an account?

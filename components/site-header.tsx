@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Search, Sparkles } from "lucide-react";
@@ -33,7 +34,7 @@ export function SiteHeader() {
         <div className="flex min-h-20 items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <MobileNav />
-            <Link href="/" className="group flex items-center gap-3">
+            <Link href={"/" as Route} className="group flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
                 <Sparkles className="h-5 w-5" />
               </div>
@@ -57,7 +58,7 @@ export function SiteHeader() {
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href as Route}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium transition-colors",
                     isActive
@@ -77,7 +78,7 @@ export function SiteHeader() {
               variant="outline"
               className="hidden rounded-full border-border/70 px-4 text-sm lg:inline-flex"
             >
-              <Link href="/products" className="gap-2">
+              <Link href={"/products" as Route} className="gap-2">
                 <Search className="h-4 w-4" />
                 Browse catalog
               </Link>
@@ -94,7 +95,7 @@ export function SiteHeader() {
               <div className="hidden items-center gap-2 md:flex">
                 {session.user.role === "ADMIN" ? (
                   <Button asChild variant="outline" className="rounded-full">
-                    <Link href="/admin/products">Admin</Link>
+                    <Link href={"/admin/products" as Route}>Admin</Link>
                   </Button>
                 ) : null}
                 <Button
@@ -108,10 +109,10 @@ export function SiteHeader() {
             ) : (
               <div className="hidden items-center gap-2 md:flex">
                 <Button asChild variant="ghost" className="rounded-full">
-                  <Link href="/login">Sign in</Link>
+                  <Link href={"/login" as Route}>Sign in</Link>
                 </Button>
                 <Button asChild className="rounded-full bg-custom-accent hover:bg-blue-600">
-                  <Link href="/register">Create account</Link>
+                  <Link href={"/register" as Route}>Create account</Link>
                 </Button>
               </div>
             )}

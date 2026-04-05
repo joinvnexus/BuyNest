@@ -9,6 +9,8 @@ cloudinary.config({
 
 export async function uploadImages(files: File[]): Promise<string[]> {
   const uploadPromises = files.map(async (file) => {
+    const buffer = Buffer.from(await file.arrayBuffer());
+
     return new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { resource_type: 'image', folder: 'ecommerce/products' },
@@ -18,10 +20,7 @@ export async function uploadImages(files: File[]): Promise<string[]> {
         }
       );
 
-      const bufferStream = new Readable();
-      bufferStream.push(file);
-      bufferStream.push(null);
-      bufferStream.pipe(stream);
+      Readable.from(buffer).pipe(stream);
     });
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { ArrowRight, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +78,7 @@ export function AuthShell({
             {children}
             <p className="mt-8 text-center text-sm text-muted-foreground">
               {footerText}{" "}
-              <Link href={footerLinkHref} className="font-medium text-foreground hover:text-custom-accent">
+              <Link href={footerLinkHref as Route} className="font-medium text-foreground hover:text-custom-accent">
                 {footerLinkLabel}
               </Link>
             </p>

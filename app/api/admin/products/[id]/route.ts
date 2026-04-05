@@ -1,18 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
+import { authOptions } from '@/lib/auth';
+import { uploadImages } from '@/services/cloudinary';
+
+interface RouteContext {
+  params: Promise<{ id: string }>;
+}
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  { params }: RouteContext
 ) {
   try {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
+
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
+
     return NextResponse.json(product);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
@@ -21,10 +35,11 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteContext
 ) {
   try {
-    const session = await auth();
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -37,19 +52,15 @@ export async function PUT(
     const category = formData.get('category') as string;
     const stock = parseInt(formData.get('stock') as string);
 
-    const imageUrls: string[] = [];
-    if (files.length > 0) {
-      const uploaded = await uploadImages(files);
-      imageUrls.push(...uploaded);
-    }
+    const imageUrls = files.length > 0 ? await uploadImages(files) : undefined;
 
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         description,
         price,
-        images: imageUrls.length > 0 ? imageUrls : undefined,
+        images: imageUrls,
         category: category || null,
         stock,
       },
@@ -62,17 +73,18 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  { params }: RouteContext
 ) {
   try {
-    const session = await auth();
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Product deleted' });
@@ -80,4 +92,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }
-

@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { uploadImages } from '@/services/cloudinary';
-import { auth } from '@/lib/auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -16,7 +22,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -29,7 +35,7 @@ export async function POST(req: NextRequest) {
     const category = formData.get('category') as string;
     const stock = parseInt(formData.get('stock') as string);
 
-    const imageUrls = await uploadImages(files);
+    const imageUrls = files.length > 0 ? await uploadImages(files) : ['/placeholder.jpg'];
 
     const product = await prisma.product.create({
       data: {

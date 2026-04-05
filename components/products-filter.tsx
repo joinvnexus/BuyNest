@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from 'next';
 import { useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
@@ -59,7 +60,7 @@ export function ProductsFilter() {
 
     startTransition(() => {
       const queryString = params.toString();
-      router.push(queryString ? `${pathname}?${queryString}` : pathname);
+      router.push((queryString ? `${pathname}?${queryString}` : pathname) as Route);
     });
   };
 
@@ -68,7 +69,7 @@ export function ProductsFilter() {
     setCategory('');
     setSort('newest');
     startTransition(() => {
-      router.push(pathname);
+      router.push(pathname as Route);
     });
   };
 

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import { getProducts } from '@/lib/db';
 import { ProductCard } from '@/components/product-card';
@@ -17,12 +18,13 @@ const sortLabels: Record<string, string> = {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string; q?: string; sort?: string };
+  searchParams: Promise<{ page?: string; category?: string; q?: string; sort?: string }>;
 }) {
-  const page = parseInt(searchParams.page || '1');
-  const category = searchParams.category || undefined;
-  const query = searchParams.q?.trim() || undefined;
-  const sort = searchParams.sort || 'newest';
+  const resolvedSearchParams = await searchParams;
+  const page = parseInt(resolvedSearchParams.page || '1');
+  const category = resolvedSearchParams.category || undefined;
+  const query = resolvedSearchParams.q?.trim() || undefined;
+  const sort = resolvedSearchParams.sort || 'newest';
 
   const { products, total, pages } = await getProducts(page, PAGE_SIZE, {
     category,
@@ -36,14 +38,14 @@ export default async function ProductsPage({
     sort !== 'newest' ? { label: `Sort: ${sortLabels[sort] || sort}` } : null,
   ].filter(Boolean) as { label: string }[];
 
-  const buildPageHref = (nextPage: number) => {
+  const buildPageHref = (nextPage: number): Route => {
     const params = new URLSearchParams();
     if (category) params.set('category', category);
     if (query) params.set('q', query);
     if (sort && sort !== 'newest') params.set('sort', sort);
     if (nextPage > 1) params.set('page', String(nextPage));
     const queryString = params.toString();
-    return queryString ? `/products?${queryString}` : '/products';
+    return (queryString ? `/products?${queryString}` : '/products') as Route;
   };
 
   return (
@@ -139,12 +141,7 @@ export default async function ProductsPage({
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-full"
-                    disabled={page <= 1}
-                  >
+                  <Button asChild variant="outline" className="rounded-full" disabled={page <= 1}>
                     <Link href={buildPageHref(Math.max(1, page - 1))}>Previous</Link>
                   </Button>
                   {Array.from({ length: pages }, (_, index) => index + 1)
@@ -159,12 +156,7 @@ export default async function ProductsPage({
                         <Link href={buildPageHref(pageNumber)}>{pageNumber}</Link>
                       </Button>
                     ))}
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-full"
-                    disabled={page >= pages}
-                  >
+                  <Button asChild variant="outline" className="rounded-full" disabled={page >= pages}>
                     <Link href={buildPageHref(Math.min(pages, page + 1))}>Next</Link>
                   </Button>
                 </div>
@@ -182,7 +174,7 @@ export default async function ProductsPage({
                 Try a broader search, switch categories, or reset the catalog back to the default view.
               </p>
               <Button asChild className="rounded-full bg-custom-accent hover:bg-blue-600">
-                <Link href="/products">Reset catalog</Link>
+                <Link href={"/products" as Route}>Reset catalog</Link>
               </Button>
             </div>
           </div>
