@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { createPaymentIntent } from '@/services/stripe';
-import { CartItem } from '@/types';
+import { validateCartItems } from '@/lib/api-validators';
 
 export async function POST(request: Request) {
   try {
@@ -20,16 +20,15 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const cartItems = (body.cartItems ?? []) as CartItem[];
-
-    if (!Array.isArray(cartItems) || cartItems.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty.' }, { status: 400 });
-    }
-
+    const cartItems = validateCartItems(body.cartItems);
     const paymentIntent = await createPaymentIntent(cartItems, session.user.id);
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
+    if (error instanceof Error && /Cart|amount/.test(error.message)) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     console.error(error);
     return NextResponse.json(
       { error: 'Failed to prepare checkout.' },

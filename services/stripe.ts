@@ -11,6 +11,10 @@ export async function createPaymentIntent(cartItems: CartItem[], userId: string)
     0
   );
 
+  if (amount <= 0) {
+    throw new Error('Payment amount must be greater than 0.');
+  }
+
   return stripe.paymentIntents.create({
     amount,
     currency: 'usd',
@@ -28,6 +32,10 @@ export async function createCheckoutSession(
   cartItems: CartItem[],
   userId: string
 ) {
+  if (cartItems.length === 0) {
+    throw new Error('Cart is empty.');
+  }
+
   const line_items = cartItems.map((item) => ({
     price_data: {
       currency: 'usd',
@@ -55,7 +63,7 @@ export async function verifyWebhook(signature: string, payload: Buffer) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
   try {
-    return stripe.webhooks.constructEvent(payload.toString(), signature, webhookSecret);
+    return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (err) {
     console.error('Webhook signature verification failed');
     return;

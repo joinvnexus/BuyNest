@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { uploadImages } from '@/services/cloudinary';
+import { parseProductFormData } from '@/lib/api-validators';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -46,28 +47,23 @@ export async function PUT(
 
     const formData = await req.formData();
     const files = formData.getAll('images') as File[];
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = parseFloat(formData.get('price') as string);
-    const category = formData.get('category') as string;
-    const stock = parseInt(formData.get('stock') as string);
-
+    const productInput = parseProductFormData(formData);
     const imageUrls = files.length > 0 ? await uploadImages(files) : undefined;
 
     const product = await prisma.product.update({
       where: { id },
       data: {
-        name,
-        description,
-        price,
+        ...productInput,
         images: imageUrls,
-        category: category || null,
-        stock,
       },
     });
 
     return NextResponse.json(product);
   } catch (error) {
+    if (error instanceof Error && /required|Price|Stock/.test(error.message)) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
