@@ -1,12 +1,157 @@
 "use client";
 
-export default function AdminProducts() {
+import { useState, useEffect } from 'react';
+import { ProductForm } from '@/components/admin/product-form';
+import { ProductFormData } from '@/components/admin/product-form';
+import { Button } from '@/components/ui/button';
+import { Product } from '@/types';
+import { toast } from 'react-hot-toast';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const res = await fetch('/api/admin/products');
+    const data = await res.json();
+    setProducts(data);
+    setLoading(false);
+  };
+
+  const handleCreate = async (data: ProductFormData, files: File[]) => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    const res = await fetch('/api/admin/products', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (res.ok) {
+      toast.success('Product created');
+      setShowForm(false);
+      fetchProducts();
+    } else {
+      toast.error('Failed to create product');
+    }
+  };
+
+  const handleEdit = async (data: ProductFormData, files: File[]) => {
+    if (!editingProduct) return;
+
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    formData.append('id', editingProduct.id);
+
+    const res = await fetch(`/api/admin/products/${editingProduct.id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (res.ok) {
+      toast.success('Product updated');
+      setEditingProduct(null);
+      fetchProducts();
+    } else {
+      toast.error('Failed to update product');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure?')) return;
+
+    const res = await fetch(`/api/admin/products/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (res.ok) {
+      toast.success('Product deleted');
+      fetchProducts();
+    } else {
+      toast.error('Failed to delete product');
+    }
+  };
+
+  if (loading) return <div>Loading products...</div>;
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8">Manage Products</h1>
-      <div className="bg-card p-6 rounded-lg">
-        <h2 className="text-2xl mb-4">Products Dashboard</h2>
-        <p>CRUD interface for products coming soon...</p>
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Products ({products.length})</h1>
+        <Dialog open={showForm} onOpenChange={setShowForm}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setEditingProduct(null)}>
+              + New Product
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <ProductForm 
+              onSubmit={handleCreate}
+              loading={loading}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <div key={product.id} className="group bg-card border p-6 rounded-xl hover:shadow-lg transition-all">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-semibold text-xl line-clamp-1">{product.name}</h3>
+              <div className="flex gap-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setEditingProduct(product)}
+                    >
+                      Edit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <ProductForm 
+                      onSubmit={handleEdit}
+                      defaultValues={{
+                        name: product.name || '',
+                        description: product.description || '',
+                        price: product.price.toString(),
+                        category: product.category || '',
+                        stock: product.stock.toString(),
+                      }}
+                      loading={loading}
+                    />
+                  </DialogContent>
+                </Dialog>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => handleDelete(product.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+            <p className="text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
+            <div className="flex justify-between items-center text-sm">
+              <span>${product.price}</span>
+              <span className="font-medium">Stock: {product.stock}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
