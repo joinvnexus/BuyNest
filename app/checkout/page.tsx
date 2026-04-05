@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useCartStore } from '@/store/cartStore';
-import { CartItem } from '@/components/cart-item';
 import { CheckoutForm } from '@/components/checkout-form';
+import { Stepper } from '@/components/ui/stepper';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
@@ -37,6 +37,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen py-12">
       <div className="container mx-auto px-4 max-w-6xl">
         <h1 className="text-4xl font-bold mb-12">Checkout</h1>
+        <Stepper steps={['Shipping Info', 'Payment', 'Review Order']} activeStep={clientSecret ? 1 : 0} />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Order Summary */}

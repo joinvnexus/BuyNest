@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Product } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
+import { toast } from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -13,7 +14,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
 
-  const handleAddToCart = () => {
+const handleAddToCart = () => {
     addItem({
       id: product.id,
       name: product.name,
@@ -21,6 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
       image: product.images[0] || '',
       quantity: 1,
     });
+    toast.success(`${product.name} added to cart`);
   };
 
   return (

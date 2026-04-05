@@ -1,9 +1,9 @@
-import { getProduct } from '@/lib/db';
-import Image from 'next/image';
-import { ProductCard } from '@/components/product-card';
-import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/store/cartStore';
+import { getProduct, getRelatedProducts } from '@/lib/db';
 import Link from 'next/link';
+import { Product } from '@/types';
+import ImageGallery from '@/components/image-gallery';
+import AddToCart from '@/components/add-to-cart';
+import RelatedProducts from '@/components/related-products';
 
 interface ProductPageProps {
   params: { id: string };
@@ -25,6 +25,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     );
   }
 
+  const related = await getRelatedProducts(product.category, product.id);
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
@@ -33,31 +35,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </Link>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative h-96 bg-muted rounded-xl overflow-hidden">
-              <Image
-                src={product.images[0] || '/placeholder.jpg'}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            {product.images.slice(1, 3).map((img, idx) => (
-              <div key={idx} className="relative h-24 bg-muted rounded-lg overflow-hidden">
-                <Image
-                  src={img}
-                  alt={`${product.name} thumbnail`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Product Info */}
-          <div className="space-y-6">
+          <ImageGallery product={product} />
+          <div className="space-y-6 lg:sticky lg:top-12">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">{product.name}</h1>
               <p className="text-3xl font-bold text-custom-primary">${product.price}</p>
@@ -67,7 +46,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </span>
               )}
             </div>
-
             <div className="prose max-w-none">
               <p className="text-muted-foreground mb-4">{product.description}</p>
               <div className="flex gap-2 mb-6">
@@ -75,16 +53,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <span className="text-sm font-medium capitalize">{product.category}</span>
               </div>
             </div>
-
-            <div className="space-y-4">
-              <Button size="lg" className="w-full" disabled={product.stock === 0}>
-                Add to Cart
-              </Button>
-              <Button variant="outline" size="lg" className="w-full">
-                Add to Wishlist
-              </Button>
-            </div>
-
+            <AddToCart product={product} />
             <div className="pt-8 border-t">
               <h3 className="font-semibold mb-3">Product Details</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -95,6 +64,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         </div>
+
+        {related && related.length > 0 && (
+          <RelatedProducts products={related} />
+        )}
       </div>
     </div>
   );

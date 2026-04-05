@@ -1,21 +1,41 @@
-# E-Commerce App Development TODO
+# Frontend UX Polish & Production Enhancements
 
-## Phase 1-4: ✅ Complete (Shop/Auth/Cart/Checkout)
+## Approved Plan Steps (User: ok)
 
-## Phase 5: Admin Dashboard ✅
-- [x] components/admin/product-form.tsx (form with image upload)
-- [x] app/api/admin/products/** CRUD routes
-- [x] app/admin/products/page.tsx (list/table with edit/delete)
-- [x] Cloudinary image upload integration
+### 1. Create New UI Components ✅ [In Progress]
+- components/ui/skeleton.tsx
+- components/ui/stepper.tsx  
+- components/product-skeleton.tsx
+- components/ui/image-modal.tsx (zoom)
 
-## Complete Production E-Commerce:
-✅ Landing/shop/products/cart/checkout/auth/admin (CRUD)
-✅ Stripe payments, Zustand cart, Prisma PG, Tailwind UI
-✅ Responsive, SEO, dark mode ready, deployable (Vercel)
+### 2. Backend Helpers
+- lib/db.ts: getRelatedProducts(category, id, limit=4)
 
-**Final Steps:** Add sample data to DB, set env vars (DB/Stripe/Cloudinary/NextAuth), `npm run dev`
+### 3. Product Detail Polish ✅
+- app/products/[id]/page.tsx: zoom modal, quantity selector, useCart+toast, related grid ✅
+- components/product-card.tsx: integrate toast on add ✅
 
-**Live Demo:** localhost:3000 → /products → cart → checkout → /admin (admin@example.com/admin123)
+### 4. Products List ✅
+- app/products/page.tsx: ProductSkeleton[], mobile filter Dialog, infinite scroll stub ✅
 
-Production-ready full-stack e-commerce platform complete per spec!
+### 5. Checkout Stepper ✅
+- app/checkout/page.tsx: Stepper (shipping/payment/review), error toasts ✅
 
+### 6. Admin Modal Confirm ✅
+- app/admin/products/page.tsx: Dialog instead confirm() ✅
+
+### 7. Global Dark Mode
+- app/layout.tsx: theme toggle
+- globals.css: dark vars
+
+### 8. Toasts Everywhere
+- All cart/add actions emit toast
+
+### 9. Test & Demo
+- npm run dev
+- Full flow test
+
+## Previous ✅
+Phases 1-5 complete...
+
+**Progress: 0/9**

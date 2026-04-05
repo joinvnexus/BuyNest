@@ -38,3 +38,14 @@ export async function searchProducts(query: string) {
     },
   });
 }
+
+export async function getRelatedProducts(category: string, excludeId: string, limit = 4) {
+  return prisma.product.findMany({
+    where: {
+      category,
+      id: { not: excludeId },
+    },
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  });
+}

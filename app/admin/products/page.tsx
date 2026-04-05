@@ -70,9 +70,13 @@ export default function AdminProductsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure?')) return;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
+  const handleDeleteConfirm = async (id: string) => {
+    setShowDeleteConfirm(id);
+  };
+
+  const handleDeleteYes = async (id: string) => {
     const res = await fetch(`/api/admin/products/${id}`, {
       method: 'DELETE',
     });
@@ -83,11 +87,96 @@ export default function AdminProductsPage() {
     } else {
       toast.error('Failed to delete product');
     }
+    setShowDeleteConfirm(null);
   };
 
   if (loading) return <div>Loading products...</div>;
 
   return (
+    <>
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Products ({products.length})</h1>
+          <Dialog open={showForm} onOpenChange={setShowForm}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setEditingProduct(null)}>
+                + New Product
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <ProductForm 
+                onSubmit={handleCreate}
+                loading={loading}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <div key={product.id} className="group bg-card border p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-semibold text-xl line-clamp-1">{product.name}</h3>
+                <div className="flex gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setEditingProduct(product)}
+                      >
+                        Edit
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <ProductForm 
+                        onSubmit={handleEdit}
+                        defaultValues={{
+                          name: product.name || '',
+                          description: product.description || '',
+                          price: product.price.toString(),
+                          category: product.category || '',
+                          stock: product.stock.toString(),
+                        }}
+                        loading={loading}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => handleDeleteConfirm(product.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+              <p className="text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
+              <div className="flex justify-between items-center text-sm">
+                <span>${product.price}</span>
+                <span className="font-medium">Stock: {product.stock}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Dialog open={!!showDeleteConfirm} onOpenChange={() => setShowDeleteConfirm(null)}>
+        <DialogContent>
+          <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+          <p className="text-muted-foreground mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={() => handleDeleteYes(showDeleteConfirm!)}>
+              Delete Product
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Products ({products.length})</h1>
@@ -139,7 +228,7 @@ export default function AdminProductsPage() {
                 <Button 
                   variant="destructive" 
                   size="sm"
-                  onClick={() => handleDelete(product.id)}
+                  onClick={() => handleDeleteConfirm(product.id)}
                 >
                   Delete
                 </Button>

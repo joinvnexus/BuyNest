@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 
 interface FilterProps {
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;
 }
 
 export function ProductsFilter({ onSearch }: FilterProps) {
