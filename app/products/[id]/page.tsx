@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import type { Route } from 'next';
+import { notFound } from 'next/navigation';
 import { Check, ChevronLeft, ShieldCheck, Truck } from 'lucide-react';
 import { getProduct, getRelatedProducts } from '@/lib/db';
 import { ImageGallery } from '@/components/image-gallery';
 import { AddToCart } from '@/components/add-to-cart';
 import { RelatedProducts } from '@/components/related-products';
-import { Button } from '@/components/ui/button';
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -16,22 +16,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProduct(id);
 
   if (!product) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="max-w-md rounded-[2rem] border border-border/60 bg-card p-10 text-center shadow-sm">
-          <p className="mb-3 text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">
-            Product unavailable
-          </p>
-          <h1 className="mb-4 text-4xl font-semibold tracking-tight">Product not found</h1>
-          <p className="mb-8 text-muted-foreground">
-            This item may have been removed or is no longer available in the catalog.
-          </p>
-          <Button asChild className="rounded-full bg-custom-accent hover:bg-blue-600">
-            <Link href={"/products" as Route}>Back to catalog</Link>
-          </Button>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   const related = product.category
