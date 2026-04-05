@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { CartItem } from '@/types';
 import { persist } from 'zustand/middleware';
 import type { ReactNode } from 'react';
+import { CartItem } from '@/types';
 
 interface CartState {
   items: CartItem[];
@@ -17,6 +17,18 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
+function withTotals(items: CartItem[]) {
+  const sanitizedItems = items.filter((item) => item.quantity > 0);
+  const totalItems = sanitizedItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = sanitizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  return {
+    items: sanitizedItems,
+    totalItems,
+    totalPrice,
+  };
+}
+
 export function CartProvider({ children }: CartProviderProps) {
   return children;
 }
@@ -30,42 +42,36 @@ export const useCartStore = create<CartState>()(
       addItem: (newItem) => {
         const { items } = get();
         const existingItem = items.find((item) => item.id === newItem.id);
+
         if (existingItem) {
           const updatedItems = items.map((item) =>
             item.id === newItem.id
               ? { ...item, quantity: item.quantity + newItem.quantity }
               : item
           );
-          set({ items: updatedItems });
-        } else {
-          set({ items: [...items, newItem as CartItem] });
+
+          set(withTotals(updatedItems));
+          return;
         }
+
+        set(withTotals([...items, newItem as CartItem]));
       },
       updateQuantity: (id, quantity) => {
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
-          ),
-        }));
+        const normalizedQuantity = Math.max(0, quantity);
+        const updatedItems = get().items.map((item) =>
+          item.id === id ? { ...item, quantity: normalizedQuantity } : item
+        );
+
+        set(withTotals(updatedItems));
       },
       removeItem: (id) => {
-        set((state) => ({
-          items: state.items.filter((item) => item.id !== id),
-        }));
+        const updatedItems = get().items.filter((item) => item.id !== id);
+        set(withTotals(updatedItems));
       },
-      clearCart: () => set({ items: [], totalItems: 0, totalPrice: 0 }),
+      clearCart: () => set(withTotals([])),
     }),
     {
       name: 'cart-storage',
     }
   )
 );
-
-// Subscribe to updates
-useCartStore.subscribe((state) => {
-  const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  useCartStore.setState({ totalItems, totalPrice });
-});
-
