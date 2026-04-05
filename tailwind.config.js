@@ -1,6 +1,3 @@
-import type { Config } from 'tailwindcss';
-const { fontFamily } = createGlobalTheme('sans');
-
 const config = {
   darkMode: ['class'],
   content: [

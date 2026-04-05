@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { CartItem } from '@/types';
 import { persist } from 'zustand/middleware';
+import type { ReactNode } from 'react';
 
 interface CartState {
   items: CartItem[];
@@ -10,6 +11,14 @@ interface CartState {
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
+}
+
+interface CartProviderProps {
+  children: ReactNode;
+}
+
+export function CartProvider({ children }: CartProviderProps) {
+  return children;
 }
 
 export const useCartStore = create<CartState>()(

@@ -15,7 +15,7 @@
 - [x] store/cartStore.ts (Zustand)
 - [x] Basic UI components (button, utils, toaster)
 - [x] app/page.tsx (landing hero)
-- [ ] User: `cd ecommerce-app && npm install && npx prisma db push`
+- [x] User: `cd ecommerce-app && npm install && npx prisma db push`
 
 ## Phase 2: Authentication (Next)
 
