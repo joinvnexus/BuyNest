@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getProducts } from '@/lib/db';
 import { ProductCard } from '@/components/product-card';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 export default async function LandingPage() {
   const { products: featured } = await getProducts(1, 6);

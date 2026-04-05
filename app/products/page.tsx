@@ -5,7 +5,7 @@ import { ProductSkeleton } from '@/components/product-skeleton';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Suspense } from 'react';
-import { Funnel } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 export default async function ProductsPage({
   searchParams,
@@ -31,7 +31,7 @@ export default async function ProductsPage({
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" className="gap-2">
-                <Funnel className="h-4 w-4" />
+                <Filter className="h-4 w-4" />
                 Filters
               </Button>
             </DialogTrigger>
