@@ -1,16 +1,45 @@
 import { prisma } from '@/lib/prisma';
-import { Product } from '@/types';
 
-export async function getProducts(page = 1, limit = 12, category?: string) {
+interface GetProductsOptions {
+  category?: string;
+  query?: string;
+  sort?: 'newest' | 'price-asc' | 'price-desc' | 'name';
+}
+
+export async function getProducts(
+  page = 1,
+  limit = 12,
+  options: GetProductsOptions = {}
+) {
   const skip = (page - 1) * limit;
-  const where = category ? { category } : {};
-  
+  const { category, query, sort = 'newest' } = options;
+  const where = {
+    ...(category ? { category } : {}),
+    ...(query
+      ? {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' as const } },
+            { description: { contains: query, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const orderBy =
+    sort === 'price-asc'
+      ? { price: 'asc' as const }
+      : sort === 'price-desc'
+        ? { price: 'desc' as const }
+        : sort === 'name'
+          ? { name: 'asc' as const }
+          : { createdAt: 'desc' as const };
+
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     }),
     prisma.product.count({ where }),
   ]);
