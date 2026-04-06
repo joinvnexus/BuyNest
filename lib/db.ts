@@ -78,3 +78,35 @@ export async function getRelatedProducts(category: string, excludeId: string, li
     orderBy: { createdAt: 'desc' },
   });
 }
+
+export async function getUserOrders(userId: string) {
+  return prisma.order.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+export async function getUserById(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+  });
+}
+
+export async function updateUserPassword(userId: string, hashedPassword: string) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+}
+
+export async function deleteUser(userId: string) {
+  return prisma.user.delete({
+    where: { id: userId },
+  });
+}

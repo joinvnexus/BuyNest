@@ -4,11 +4,20 @@ import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, User, LogOut } from "lucide-react";
 import { CartBadge } from "@/components/cart-badge";
 import { MobileNav } from "@/components/mobile-nav";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -21,6 +30,8 @@ const navLinks = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+
+  const user = session?.user;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -90,21 +101,65 @@ export function SiteHeader() {
             </div>
 
             {status === "loading" ? (
-              <div className="hidden h-10 w-24 animate-pulse rounded-full bg-muted md:block" />
-            ) : session ? (
-              <div className="hidden items-center gap-2 md:flex">
-                {session.user.role === "ADMIN" ? (
-                  <Button asChild variant="outline" className="rounded-full">
-                    <Link href={"/admin/products" as Route}>Admin</Link>
-                  </Button>
-                ) : null}
-                <Button
-                  variant="ghost"
-                  className="rounded-full"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  Sign out
-                </Button>
+              <div className="hidden h-10 w-10 animate-pulse rounded-full bg-muted md:block" />
+            ) : session && user ? (
+              <div className="hidden md:block">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage 
+                          src={user.image || ""} 
+                          alt={user.name || "User"} 
+                        />
+                        <AvatarFallback>
+                          {user.name 
+                            ? user.name.slice(0, 2).toUpperCase() 
+                            : user.email?.slice(0, 2).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-56" align="end">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <p className="font-medium">{user.name || "User"}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    
+                    <DropdownMenuSeparator />
+
+                    {session.user.role === "ADMIN" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/products" className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/account" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        My Account
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem 
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <div className="hidden items-center gap-2 md:flex">
