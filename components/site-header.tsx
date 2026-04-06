@@ -49,14 +49,14 @@ export function SiteHeader() {
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
                 <Sparkles className="h-5 w-5" />
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                  E-Commerce Pro
-                </p>
-                <p className="text-base font-semibold text-foreground transition-colors group-hover:text-custom-accent">
-                  Thoughtful goods for everyday use
-                </p>
-              </div>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                    BuyNest
+                  </p>
+                  <p className="text-base font-semibold text-foreground transition-colors group-hover:text-custom-accent">
+                    Thoughtful shopping for everyday living
+                  </p>
+                </div>
             </Link>
           </div>
 

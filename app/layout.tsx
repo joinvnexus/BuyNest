@@ -9,8 +9,8 @@ import { SiteHeader } from '@/components/site-header';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'E-Commerce Pro',
-  description: 'Modern e-commerce platform',
+  title: 'BuyNest',
+  description: 'BuyNest modern storefront for curated everyday shopping',
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider
           defaultTheme="system"
-          storageKey="ecommerce-theme"
+          storageKey="buynest-theme"
         >
           <Providers>
             <div className="relative min-h-screen overflow-x-hidden">
@@ -33,7 +33,7 @@ export default function RootLayout({
               <footer className="border-t border-border/60 bg-background/80">
                 <div className="container flex flex-col gap-3 px-4 py-10 text-sm text-muted-foreground sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
                   <div>
-                    <p className="font-medium text-foreground">E-Commerce Pro</p>
+                    <p className="font-medium text-foreground">BuyNest</p>
                     <p>Modern storefront foundations for curated retail experiences.</p>
                   </div>
                   <div className="flex flex-wrap gap-4">

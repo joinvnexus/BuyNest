@@ -3,7 +3,7 @@ import { getProducts } from '@/lib/db';
 import { ProductCard } from '@/components/product-card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-
+import { Sparkles } from 'lucide-react';
 const heroImage =
   'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1600&q=80';
 const spotlightImage =
@@ -52,7 +52,7 @@ export default async function LandingPage() {
 
   return (
     <main className="bg-background text-foreground">
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-slate-900 via-custom-primary to-custom-accent px-4 pt-20 pb-24">
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-slate-900 via-custom-primary to-custom-accent px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black/40" />
           <Image
@@ -64,8 +64,8 @@ export default async function LandingPage() {
             sizes="(max-width: 768px) 100vw, 80vw"
           />
         </div>
-        <div className="relative z-10 container mx-auto grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <div className="space-y-8 text-white">
+        <div className="relative z-10 container mx-auto grid items-center gap-8 lg:gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-7 text-white sm:space-y-8">
             <p className="text-sm uppercase tracking-[0.4em] opacity-70">
               New arrivals · Curated weekly
             </p>
@@ -76,7 +76,7 @@ export default async function LandingPage() {
               Explore premium essentials crafted for thoughtful living, backed by fast shipping and
               attentive service.
             </p>
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <Link href="/products">
                 <Button size="lg" className="px-10 text-base bg-white text-custom-primary hover:bg-slate-50">
                   Shop the collection
@@ -88,7 +88,7 @@ export default async function LandingPage() {
                 </Button>
               </Link>
             </div>
-            <div className="grid grid-cols-3 gap-6 pt-4">
+            <div className="grid gap-4 pt-3 sm:grid-cols-3 sm:gap-5 sm:pt-4">
               {stats.map((stat) => (
                 <div
                   key={stat.label}
@@ -101,7 +101,7 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-white/10 p-10 backdrop-blur">
+          <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-white/10 p-6 backdrop-blur sm:p-8 lg:p-10">
             <p className="text-sm uppercase tracking-[0.4em] text-white/80 mb-3">Spotlight</p>
             <h3 className="text-2xl font-semibold text-white mb-4">
               Signature Drop: Aurora Edition
@@ -134,7 +134,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-3xl font-semibold">Why people trust the store</h2>
@@ -148,7 +148,7 @@ export default async function LandingPage() {
             </Button>
           </Link>
         </div>
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-3 md:gap-8">
           {highlights.map((highlight) => (
             <div
               key={highlight.title}
@@ -162,16 +162,16 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col gap-6 text-center">
+      <section className="bg-muted/30 py-16 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-5 text-center sm:gap-6">
             <h2 className="text-3xl font-semibold">Hand-picked categories for effortless shopping</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Move from inspiration to checkout without noise. Each capsule collection features
               complementary pieces that feel like they belong together.
             </p>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-5 sm:mt-10 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
             {categories.map((category) => (
               <div
                 key={category.title}
@@ -198,33 +198,47 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-          <div className="space-y-4">
-            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Featured</p>
-            <h2 className="text-3xl font-semibold">Featured & trusted products</h2>
-            <p className="text-muted-foreground">
-              Every item below carries detailed specs, honest reviews, and a satisfaction guarantee.
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="mb-8 flex flex-col items-start gap-4 md:mb-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-widest text-muted-foreground">
+              FEATURED & TRENDING
             </p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Button size="sm" variant="outline" className="px-6">
-                Explore filters
-              </Button>
-              <Button size="sm" className="px-6">
-                Subscribe for drops
-              </Button>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+              Curated picks for you
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              Cleaner cards, quicker scanning, and a tighter layout that keeps the homepage
+              feeling premium instead of oversized.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="outline" size="sm" className="rounded-full">
+              <Link href="/products">View all</Link>
+            </Button>
+            <Button asChild size="sm" className="rounded-full">
+              <Link href="/products">Shop trending</Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {featured.map((product) => (
+            <div key={product.id} className="relative h-full">
+              {product.stock > 20 ? (
+                <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
+                  Best Seller
+                </div>
+              ) : null}
+              <ProductCard product={product} />
             </div>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {featured.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="bg-gradient-to-r from-custom-accent/80 to-slate-900 px-4 py-16">
-        <div className="container mx-auto flex flex-col gap-6 text-white lg:flex-row lg:items-center lg:justify-between">
+      <section className="bg-gradient-to-r from-custom-accent/80 to-slate-900 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="container mx-auto flex flex-col gap-8 text-white lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.4em] opacity-80">Stay in the loop</p>
             <h2 className="text-3xl font-semibold">Minimal emails. Maximum value.</h2>
@@ -232,7 +246,7 @@ export default async function LandingPage() {
               Receive weekly highlights, restock notices, and thoughtful offers without the noise.
             </p>
           </div>
-          <div className="flex flex-col gap-3 rounded-2xl bg-white/10 p-6 backdrop-blur">
+          <div className="flex w-full max-w-md flex-col gap-3 rounded-2xl bg-white/10 p-5 backdrop-blur sm:p-6">
             <input
               type="email"
               placeholder="Email address"
