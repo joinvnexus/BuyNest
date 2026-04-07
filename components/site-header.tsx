@@ -107,9 +107,9 @@ export function SiteHeader() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage 
-                          src={user.image || ""} 
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage 
+                          src={user.image ?? undefined} 
                           alt={user.name || "User"} 
                         />
                         <AvatarFallback>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import Image from 'next/image';
 
 interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -10,7 +11,7 @@ interface AvatarImageProps
   alt: string;
   width?: number;
   height?: number;
-  src: string;
+  src?: string;
 }
 
 function Avatar({ className, ...props }: AvatarProps) {
@@ -26,7 +27,11 @@ function Avatar({ className, ...props }: AvatarProps) {
 }
 
 function AvatarImage({ src, alt, ...props }: AvatarImageProps) {
-  return <img src={src} alt={alt} className="h-full w-full object-cover" {...props} />;
+  if (!src) {
+    return null;
+  }
+
+  return <Image src={src} alt={alt} className="h-full w-full object-cover" {...props} />;
 }
 
 function AvatarFallback({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
