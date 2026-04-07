@@ -34,15 +34,15 @@ export function SiteHeader() {
   const user = session?.user;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+    <header className="surface-glass sticky top-0 z-50 border-b">
       <div className="border-b border-border/40 bg-muted/40">
-        <div className="container flex min-h-10 items-center justify-center px-4 text-center text-xs font-medium text-muted-foreground sm:px-6 lg:px-8">
+        <div className="responsive-section flex min-h-10 items-center justify-center text-center text-xs font-medium text-muted-foreground">
           Curated essentials, fast delivery, and a cleaner storefront flow.
         </div>
       </div>
 
-      <div className="container px-4 sm:px-6 lg:px-8">
-        <div className="flex min-h-20 items-center justify-between gap-4">
+      <div className="responsive-section">
+        <div className="flex min-h-20 items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-3">
             <MobileNav />
             <Link href={"/" as Route} className="group flex items-center gap-3">
@@ -83,11 +83,11 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <Button
               asChild
               variant="outline"
-              className="hidden rounded-full border-border/70 px-4 text-sm lg:inline-flex"
+              className="hidden rounded-full border-border/70 px-4 text-sm xl:inline-flex"
             >
               <Link href={"/products" as Route} className="gap-2">
                 <Search className="h-4 w-4" />
@@ -96,7 +96,7 @@ export function SiteHeader() {
             </Button>
 
             <CartBadge />
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <ModeToggle />
             </div>
 

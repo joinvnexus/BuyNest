@@ -58,6 +58,7 @@
     background-image:
       linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background))),
       radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 40%);
+    min-height: 100vh;
   }
 
   ::selection {
@@ -71,7 +72,24 @@
   textarea {
     @apply outline-none;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .app-shell {
+    @apply mx-auto w-full max-w-[1440px];
+  }
+
+  .surface-glass {
+    @apply border border-border/60 bg-background/75 backdrop-blur-xl;
+  }
+
+  .responsive-section {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap');
-

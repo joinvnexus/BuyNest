@@ -28,10 +28,12 @@ export default function RootLayout({
           <Providers>
             <div className="relative min-h-screen overflow-x-hidden">
               <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.16),_transparent_60%)]" />
-              <SiteHeader />
-              <main className="relative">{children}</main>
+              <div className="app-shell">
+                <SiteHeader />
+                <main className="relative">{children}</main>
+              </div>
               <footer className="border-t border-border/60 bg-background text-foreground">
-                <div className="container px-4 py-14 sm:px-6 lg:px-8">
+                <div className="app-shell responsive-section py-14">
                   <div className="grid gap-10 lg:grid-cols-[1.1fr_0.55fr_0.55fr_0.8fr]">
                     <div className="max-w-md space-y-5">
                       <div className="inline-flex items-center gap-3">
